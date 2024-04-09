@@ -1,0 +1,136 @@
+const wordCount = document.getElementById("wordsContainer").childElementCount;
+let wordsList = []
+let count = 0
+let started = false
+let wordsInputted = []
+let word = '';
+for (let i = 0; i < wordCount; i++) {
+    word = document.getElementById(i).text 
+    word = word.slice(0, word.length - 1)
+    wordsList.push(word)
+}
+
+let startTime, endTime, timeDiff;
+let timeTaken = 0;
+let input = document.getElementById("wordsInput");
+input.addEventListener("input", updateValue);
+function updateValue(e) {
+    let targetValueLength = e.target.value.length;
+    if (targetValueLength === 1 && started == false) {
+        console.log('reachd target')
+        started = true
+        startTimer()
+        // start()
+        lookForEnter()
+    }else if (e.target.value == null) {
+        
+    }else if (e.target.value[targetValueLength - 1] == ' ') {
+        wordsInputted.push(e.target.value)
+        e.target.value = ''
+        document.getElementById('wordsInput').value = ''
+        let wordElement = document.getElementById(count) 
+        if (wordElement.style.backgroundColor == "red") {
+        wordElement.style.color = "red"
+        wordElement.style.backgroundColor = "white"
+        }else {
+        wordElement.style.backgroundColor = "grey"
+        }
+        count++
+    }
+
+    targetValueLength = e.target.value.length;
+    if (wordsList[count].slice(0, targetValueLength) != e.target.value) {
+        document.getElementById(count).style.backgroundColor = "red"
+    }else {
+
+        document.getElementById(count).style.backgroundColor = "green"
+    }
+}
+function start(){
+    startTime = new Date()
+}
+
+function end() {
+    endTime = new Date()
+    timeDiff = (endTime - startTime)
+    timeDiff /= 1000;
+    let seconds = Math.round(timeDiff, 1)
+
+    return seconds
+}
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+let i = 0
+async function startTimer() {
+    while (i < 10) {
+        console.log('reached start timer')
+        timeTaken = timeTaken + 1
+        // console.log(timeTaken);
+        let pElem = document.getElementById('timeTaken')
+        pElem.value = timeTaken
+        
+        let wordsInputtedStr = ''
+        document.getElementById("wordsInputFinal").value = "" 
+        for (let i = 0; i < wordsInputted.length; i ++ ) {
+            wordsInputtedStr = wordsInputtedStr + wordsInputted[i]
+        }
+        document.getElementById("wordsInputFinal").value = wordsInputtedStr
+        // console.log(pElem.innerHTML)
+        await sleep(1000)
+
+    }
+}
+function changeTimeTakenValue() {
+    console.log('reached target 2222')
+    end()
+    document.getElementById('timeTaken').innerHTML = timeDiff
+    
+    document.getElementById("wordsInputFinal").innerHTML = wordsInputtedStr
+    sleep(10000)
+}
+async function lookForEnter() {
+    document.getElementById('wordsInput').addEventListener('keyup', function(event) {
+        if (event.keyCode === 13) {
+            // let timeTakenInSeconds = end()
+            // let pElem = document.getElementById('timeTaken')
+            // pElem.value = timeTakenInSeconds
+            for (let i = 0; i < wordsInputted.length; i ++ ) {
+                wordsInputtedStr = wordsInputtedStr + wordsInputted[i] + ' '
+            }
+            document.getElementById("wordsInputFinal").value = wordsInputtedStr
+            
+            document.getElementById("wordsInputFinal").innerHTML = wordsInputtedStr
+            document.getElementById('submitButton').click();
+        }
+    })
+}
+
+async function startTypingTest() {
+    let hasStarted = document.getElementById('hasStarted').innerHTML
+    console.log(hasStarted)
+    if (hasStarted == 'false') {
+        hasStarted = 'true'
+        let startButton = document.getElementById('startButton')
+        startButton.innerHTML = '1'
+        await sleep(1000)
+        startButton.innerHTML = '2'
+        await sleep(1000)
+        startButton.innerHTML = 'START'
+        startButton.setAttribute('class', 'btn btn-secondary')
+        document.getElementById('wordsInput').value = ''
+        startTimer()
+        // start()
+        lookForEnter()
+    }else {
+        
+    }
+    
+}
+
+
+let wordsInput = document.getElementById('wordsInput').value
+
+function redirectToConfigure() {
+    location.replace("/configure")
+}

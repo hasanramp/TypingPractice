@@ -1,0 +1,29 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Practice</title>
+</head>
+<body>
+    <div id="main body">
+        <form action="/result" method="POST" id="main-form">
+            <!-- <label style="font-size: 40px;"><%= words.text %></label><br> -->
+            <div id="wordsContainer">
+                <% for(let i = 0; i < words.text.length; i++) { %>
+                    <a style="font-size: 50px;" id="<%= i %>"><%= words.text[i] + " " %></a>
+                <%}; %>
+            </div>
+            <input id="timeTaken" name="timeTaken" type="text" class="hidden-label" style="visibility:hidden;">
+            <!-- <button id="startButton" type="button" onclick="startTypingTest()" class="btn btn-primary">Start</button> -->
+            <button id="configureButton" type="button" onclick="redirectToConfigure()" class="btn btn-primary">Configure</button>
+            <input id="wordsInput" autocomplete="off" name="wordsInput" type="text" class="form-control" style="font-size:35px;">
+            <input id="wordsInputFinal" autocomplete="off" name="wordsInputFinal" type="text" class="form-control" style="visibility: hidden;">
+            
+            <button id="submitButton" type="submit" style="visibility: hidden">Submit</button>
+            <p id="hasStarted" style="visibility: hidden">false</p>
+        </form>
+    </div>
+</body>
+</html>

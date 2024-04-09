@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+     integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" 
+     crossorigin="anonymous">
+     <!-- <link rel="stylesheet" href="./index.css"> -->
+    <title>Typing Test</title>
+</head>
+<body>
+    <div id="main body">
+        <form action="/result" method="POST" id="main-form">
+            <!-- <label style="font-size: 40px;"><%= words.text %></label><br> -->
+            <div id="wordsContainer">
+                <% for(let i = 0; i < words.text.length; i++) { %>
+                    <a style="font-size: 50px;" id="<%= i %>"><%= words.text[i] + " " %></a>
+                <%}; %>
+            </div>
+            <input id="timeTaken" name="timeTaken" type="text" class="hidden-label" style="visibility:hidden;">
+            <!-- <button id="startButton" type="button" onclick="startTypingTest()" class="btn btn-primary">Start</button> -->
+            <button id="configureButton" type="button" onclick="redirectToConfigure()" class="btn btn-primary">Configure</button>
+            <input id="wordsInput" autocomplete="off" name="wordsInput" type="text" class="form-control" style="font-size:35px;">
+            <input id="wordsInputFinal" autocomplete="off" name="wordsInputFinal" type="text" class="form-control" style="visibility: hidden;">
+            
+            <button id="submitButton" type="submit" style="visibility: hidden">Submit</button>
+            <p id="hasStarted" style="visibility: hidden">false</p>
+            <script>
+                const wordCount = document.getElementById("wordsContainer").childElementCount;
+                let wordsList = []
+                let count = 0
+                let started = false
+                let wordsInputted = []
+                let word = '';
+                for (let i = 0; i < wordCount; i++) {
+                    word = document.getElementById(i).text 
+                    word = word.slice(0, word.length - 1)
+                    wordsList.push(word)
+                }
+
+                let startTime, endTime, timeDiff;
+                let timeTaken = 0;
+                let input = document.getElementById("wordsInput");
+                input.addEventListener("input", updateValue);
+                function updateValue(e) {
+                    let targetValueLength = e.target.value.length;
+                    if (targetValueLength === 1 && started == false) {
+                        console.log('reachd target')
+                        started = true
+                        startTimer()
+                        // start()
+                        lookForEnter()
+                    }else if (e.target.value == null) {
+                        
+                    }else if (e.target.value[targetValueLength - 1] == ' ') {
+                        wordsInputted.push(e.target.value)
+                        let wordElement = document.getElementById(count) 
+                        
+                        if (count == wordsList.length - 1) {
+
+                            document.getElementById('submitButton').click();
+                        }
+                        if (wordElement.style.backgroundColor == "red") {
+                            wordElement.style.color = "red"
+                            wordElement.style.backgroundColor = "white"
+                        }else {
+                          if (wordsList[count] != e.target.value.slice(0, e.target.value.length - 1)) {
+                            console.log(e.target.value.slice(0, e.target.value.length - 1))
+                            console.log(wordsList[count].length)
+                            wordElement.style.color = "red"
+                            wordElement.style.backgroundColor = "white"
+                          }else {
+                            wordElement.style.backgroundColor = "grey"
+                          }
+                        }
+                            count++
+                        e.target.value = ''
+                        document.getElementById('wordsInput').value = ''
+                    }
+
+                    targetValueLength = e.target.value.length;
+                    if (wordsList[count].slice(0, targetValueLength) != e.target.value) {
+                        document.getElementById(count).style.backgroundColor = "red"
+                    }else {
+
+                        document.getElementById(count).style.backgroundColor = "green"
+                    }
+                }
+                function start(){
+                    startTime = new Date()
+                }
+                
+                function end() {
+                    endTime = new Date()
+                    timeDiff = (endTime - startTime)
+                    timeDiff /= 1000;
+                    let seconds = Math.round(timeDiff, 1)
+
+                    return seconds
+                }
+                function sleep(ms) {
+                    return new Promise(resolve => setTimeout(resolve, ms));
+                }
+                let i = 0
+                async function startTimer() {
+                    while (i < 10) {
+                        timeTaken = timeTaken + 1
+                        // console.log(timeTaken);
+                        let pElem = document.getElementById('timeTaken')
+                        pElem.value = timeTaken
+                        
+                        let wordsInputtedStr = ''
+                        document.getElementById("wordsInputFinal").value = "" 
+                        for (let i = 0; i < wordsInputted.length; i ++ ) {
+                            wordsInputtedStr = wordsInputtedStr + wordsInputted[i]
+                        }
+                        document.getElementById("wordsInputFinal").value = wordsInputtedStr
+                        // console.log(pElem.innerHTML)
+                        await sleep(1000)
+
+                    }
+                }
+                function changeTimeTakenValue() {
+                    console.log('reached target 2222')
+                    end()
+                    document.getElementById('timeTaken').innerHTML = timeDiff
+                    
+                    document.getElementById("wordsInputFinal").innerHTML = wordsInputtedStr
+                    sleep(10000)
+                }
+                async function lookForEnter() {
+                    document.getElementById('wordsInput').addEventListener('keyup', function(event) {
+                        if (event.keyCode === 13) {
+                            // let timeTakenInSeconds = end()
+                            // let pElem = document.getElementById('timeTaken')
+                            // pElem.value = timeTakenInSeconds
+                            for (let i = 0; i < wordsInputted.length; i ++ ) {
+                                wordsInputtedStr = wordsInputtedStr + wordsInputted[i] + ' '
+                            }
+                            document.getElementById("wordsInputFinal").value = wordsInputtedStr
+                            
+                            document.getElementById("wordsInputFinal").innerHTML = wordsInputtedStr
+                            document.getElementById('submitButton').click();
+                        }
+                    })
+                }
+
+                async function startTypingTest() {
+                    let hasStarted = document.getElementById('hasStarted').innerHTML
+                    console.log(hasStarted)
+                    if (hasStarted == 'false') {
+                        hasStarted = 'true'
+                        let startButton = document.getElementById('startButton')
+                        startButton.innerHTML = '1'
+                        await sleep(1000)
+                        startButton.innerHTML = '2'
+                        await sleep(1000)
+                        startButton.innerHTML = 'START'
+                        startButton.setAttribute('class', 'btn btn-secondary')
+                        document.getElementById('wordsInput').value = ''
+                        startTimer()
+                        // start()
+                        lookForEnter()
+                    }else {
+                        
+                    }
+                    
+                }
+
+                
+                let wordsInput = document.getElementById('wordsInput').value
+                
+                function redirectToConfigure() {
+                    location.replace("/configure")
+                }
+
+            </script>
+        </form>
+    </div>
+</body>
+</html>
